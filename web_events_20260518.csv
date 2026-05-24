@@ -1,0 +1,6 @@
+timestamp,event_type,query,intent,result_count,book_id,score,details
+2026-05-18T12:48:11.440563,play,,,,9,,The Mordant
+2026-05-18T12:48:12.038216,play,,,,9,,The Mordant
+2026-05-18T12:50:22.804905,stop,,,,9,,The Mordant
+2026-05-18T12:50:33.550892,play,,,,9,,The Mordant
+2026-05-18T12:50:34.070569,play,,,,9,,The Mordant

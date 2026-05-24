@@ -1,0 +1,4 @@
+timestamp,event_type,query,intent,result_count,book_id,score,details
+2026-05-08T15:56:20.306739,play,,,,6,,The Mordant (author_unknown)
+2026-05-08T15:56:20.381426,play,,,,6,,The Mordant (author_unknown)
+2026-05-08T15:58:53.868231,pause,,,,6,,The Mordant (author_unknown)

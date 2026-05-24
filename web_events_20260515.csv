@@ -1,0 +1,26 @@
+timestamp,event_type,query,intent,result_count,book_id,score,details
+2026-05-15T13:05:28.209435,play,,,,1,,Glasgow Men and Women
+2026-05-15T13:05:28.240884,play,,,,1,,Glasgow Men and Women
+2026-05-15T13:05:57.153247,pause,,,,1,,Glasgow Men and Women
+2026-05-15T13:09:08.675847,stop,,,,,,
+2026-05-15T13:09:24.575920,play,,,,6,,The Mordant (author_unknown)
+2026-05-15T13:09:24.620738,play,,,,6,,The Mordant (author_unknown)
+2026-05-15T13:09:28.190354,pause,,,,6,,The Mordant (author_unknown)
+2026-05-15T13:10:56.817225,stop,,,,,,
+2026-05-15T13:11:46.037022,play,,,,2,,Mitteilungen des Landesvereins Saechsischer Heimatschutz
+2026-05-15T13:11:46.087812,play,,,,2,,Mitteilungen des Landesvereins Saechsischer Heimatschutz
+2026-05-15T13:15:20.654158,play,,,,1,,Glasgow Men and Women
+2026-05-15T13:16:42.273283,play,,,,9,,The Mordant
+2026-05-15T13:16:43.391419,play,,,,9,,The Mordant
+2026-05-15T13:17:15.387817,stop,,,,,,
+2026-05-15T13:17:20.312945,stop,,,,,,
+2026-05-15T13:17:35.467622,play,,,,9,,The Mordant
+2026-05-15T13:17:35.556922,play,,,,9,,The Mordant
+2026-05-15T13:22:38.921414,stop,,,,,,
+2026-05-15T13:23:05.955577,play,,,,9,,The Mordant
+2026-05-15T13:23:06.031707,play,,,,9,,The Mordant
+2026-05-15T15:28:54.303528,play,,,,3,,Africa
+2026-05-15T15:28:55.934056,play,,,,3,,Africa
+2026-05-15T15:29:29.416619,stop,,,,3,,Africa
+2026-05-15T16:08:24.318768,play,,,,9,,The Mordant
+2026-05-15T16:08:25.763591,play,,,,9,,The Mordant

@@ -1,0 +1,5 @@
+timestamp,event_type,query,intent,result_count,book_id,score,details
+2026-05-09T09:56:22.593659,play,,,,1,,Glasgow Men and Women
+2026-05-09T09:56:22.623699,play,,,,1,,Glasgow Men and Women
+2026-05-09T09:56:55.143486,stop,,,,1,,Glasgow Men and Women
+2026-05-09T09:57:22.775061,stop,,,,1,,Glasgow Men and Women

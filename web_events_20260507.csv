@@ -1,0 +1,55 @@
+timestamp,event_type,query,intent,result_count,book_id,score,details
+2026-05-07T08:20:54.062143,play,,,,1,,Glasgow Men and Women
+2026-05-07T08:21:34.505245,play,,,,2,,Mitteilungen des Landesvereins Saechsischer Heimatschutz
+2026-05-07T08:25:41.256147,play,,,,1,,Glasgow Men and Women
+2026-05-07T08:28:46.877295,play,,,,1,,Glasgow Men and Women
+2026-05-07T08:33:26.054564,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:33:45.736760,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:03.469147,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:03.482898,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:04.922393,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:04.939908,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:13.416990,pause,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:17.277713,resume,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:21.068232,speed_change,,,,6,,rate=1.3
+2026-05-07T08:38:21.070191,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:21.086273,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:23.692392,speed_change,,,,6,,rate=1.3
+2026-05-07T08:38:23.694840,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:23.722469,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:26.327823,speed_change,,,,6,,rate=1.3
+2026-05-07T08:38:26.335664,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:26.356846,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:27.571952,speed_change,,,,6,,rate=1.3
+2026-05-07T08:38:27.574785,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:27.593072,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:28.304697,speed_change,,,,6,,rate=1.3
+2026-05-07T08:38:28.309430,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:28.330054,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:34.034863,speed_change,,,,6,,rate=0.7
+2026-05-07T08:38:34.039120,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:34.056581,play,,,,6,,The Mordant (author_unknown)
+2026-05-07T08:38:48.831590,pause,,,,6,,The Mordant (author_unknown)
+2026-05-07T09:40:20.185541,play,,,,1,,Glasgow Men and Women
+2026-05-07T09:40:20.201690,play,,,,1,,Glasgow Men and Women
+2026-05-07T09:40:24.713429,pause,,,,1,,Glasgow Men and Women
+2026-05-07T09:51:01.058713,welcome,,,,,,
+2026-05-07T09:52:09.758761,play,,,,3,,Africa
+2026-05-07T09:52:09.817921,play,,,,3,,Africa
+2026-05-07T11:55:35.588087,play,,,,1,,Glasgow Men and Women
+2026-05-07T11:55:35.605016,play,,,,1,,Glasgow Men and Women
+2026-05-07T11:55:55.917262,pause,,,,1,,Glasgow Men and Women
+2026-05-07T11:57:09.531348,welcome,,,,,,
+2026-05-07T12:22:30.617759,welcome,,,,,,
+2026-05-07T12:26:35.979035,play,,,,3,,Africa
+2026-05-07T12:26:35.996346,play,,,,3,,Africa
+2026-05-07T14:13:19.614055,play,,,,3,,Africa
+2026-05-07T14:13:19.969145,play,,,,3,,Africa
+2026-05-07T15:19:36.462968,welcome,,,,,,
+2026-05-07T16:49:01.041322,play,,,,1,,Glasgow Men and Women
+2026-05-07T16:49:20.352798,play,,,,1,,Glasgow Men and Women
+2026-05-07T16:49:30.483490,play,,,,1,,Glasgow Men and Women
+2026-05-07T16:49:30.736624,play,,,,1,,Glasgow Men and Women
+2026-05-07T16:49:47.667558,play,,,,1,,Glasgow Men and Women
+2026-05-07T17:20:42.452315,play,,,,1,,Glasgow Men and Women
+2026-05-07T17:20:52.463788,play,,,,1,,Glasgow Men and Women
