@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice-Navigable Digital Library</title>
+    <style>
+        :root { color-scheme: dark; font-family: Inter, Arial, sans-serif; background: #090b16; color: #e5e7eb; }
+        * { box-sizing: border-box; }
+        body { margin: 0; min-height: 100vh; }
+        .page { max-width: 1320px; margin: 0 auto; padding: 24px; }
+        .hero-card, .panel, .search-panel { background: rgba(15,23,42,0.95); border: 1px solid rgba(148,163,184,0.12); border-radius: 28px; box-shadow: 0 30px 80px rgba(15,23,42,0.35); }
+        .hero-card { padding: 32px; margin-bottom: 24px; display: grid; gap: 24px; }
+        .hero-copy h1 { margin: 0; font-size: clamp(2.4rem,4vw,3.6rem); line-height: 1.02; color: #f8fafc; }
+        .hero-copy p { margin: 0; color: #cbd5e1; font-size: 1.05rem; max-width: 760px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+        .button { border: none; border-radius: 999px; padding: 14px 22px; font-size: 0.95rem; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, background 0.2s; }
+        .button:hover { transform: translateY(-1px); }
+        .button:focus-visible { outline: 3px solid #6366f1; outline-offset: 2px; }
+        .button.primary { background: linear-gradient(135deg,#22c55e,#14b8a6); color: #072f28; box-shadow: 0 18px 40px rgba(34,197,94,0.24); }
+        .button.secondary { background: rgba(148,163,184,0.12); color: #e2e8f0; }
+        .button.accent { background: #2563eb; color: #fff; }
+        .button.active-play { background: linear-gradient(135deg,#22c55e,#14b8a6); color: #072f28; }
+        .button.active-pause { background: rgba(234,179,8,0.25); color: #fde047; }
+        .small-btn { font-size: 0.88rem; padding: 12px 16px; }
+        .main-grid { display: grid; grid-template-columns: 1.8fr 1fr; gap: 24px; }
+        .search-panel { padding: 24px; display: grid; gap: 20px; }
+        .search-row { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; }
+        .search-row input { width: 100%; border: 1px solid rgba(148,163,184,0.18); border-radius: 18px; padding: 16px 18px; background: #0f172a; color: #e2e8f0; font-size: 1rem; }
+        .search-row input:focus { outline: none; border-color: #6366f1; }
+        .filters-row { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+        .filters-row select { border-radius: 16px; border: 1px solid rgba(148,163,184,0.18); background: #0f172a; color: #e2e8f0; padding: 14px 16px; font-size: 0.95rem; }
+        .status-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .status-pill { background: rgba(30,41,59,0.85); padding: 12px 16px; border-radius: 999px; color: #cbd5e1; font-size: 0.95rem; }
+        #message { display: none; margin-bottom: 16px; }
+        .books-grid { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit,minmax(220px,1fr)); margin-top: 4px; }
+        .book-card { background: rgba(15,23,42,0.9); border: 1px solid rgba(148,163,184,0.16); padding: 22px; border-radius: 24px; display: flex; flex-direction: column; gap: 14px; cursor: pointer; }
+        .book-card:hover, .book-card:focus-within { border-color: #4f46e5; }
+        .book-card.now-playing { border-color: #22c55e; box-shadow: 0 0 0 2px rgba(34,197,94,0.3); }
+        .book-card h3 { margin: 0; font-size: 1.1rem; color: #f8fafc; }
+        .book-card p { margin: 0; color: #94a3b8; font-size: 0.95rem; }
+        .book-card .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { padding: 6px 10px; border-radius: 999px; background: rgba(71,85,105,0.18); color: #cbd5e1; font-size: 0.82rem; }
+        .book-card button { margin-top: auto; width: 100%; }
+        .sidebar { display: grid; gap: 24px; }
+        .panel { padding: 22px; }
+        .panel h2, .panel h3 { margin: 0 0 14px; color: #f8fafc; }
+        .control-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-bottom: 18px; }
+        .control-grid button { width: 100%; }
+        .preview-box { min-height: 150px; border-radius: 20px; background: #0f172a; border: 1px solid rgba(148,163,184,0.18); padding: 18px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.7; white-space: pre-wrap; overflow-y: auto; max-height: 260px; }
+        .feedback-grid { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 10px; }
+        .feedback-grid button { background: rgba(148,163,184,0.12); color: #e2e8f0; }
+        .feedback-grid button:hover { background: rgba(79,70,229,0.25); }
+        .feedback-grid button.selected { background: #4f46e5; color: #fff; }
+        .small-text { color: #94a3b8; margin: 0; }
+        .empty-state { color: #64748b; font-size: 0.95rem; padding: 24px 0; }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 700px) { .search-row { grid-template-columns: 1fr; } .filters-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="page">
+
+    <section class="hero-card">
+        <div class="hero-copy">
+            <h1>Voice-Navigable Digital Library</h1>
+            <p>Designed for blind and low-vision readers. Search by typing or voice, then listen in English, Shona, or Ndebele.</p>
+        </div>
+        <div class="hero-actions">
+            <button id="welcomeBtn"  class="button secondary">Play Welcome Message</button>
+            <button id="listBooksBtn" class="button secondary">List All Books</button>
+            <button id="showAllBtn"  class="button secondary">Show All Books</button>
+        </div>
+    </section>
+
+    <div id="message" class="status-pill" role="status" aria-live="polite"></div>
+
+    <!-- Welcome audio — played automatically on page load -->
+    <audio id="welcomeAudio" src="/welcome_audio" preload="auto" aria-hidden="true"></audio>
+
+    <div class="main-grid">
+        <section class="search-panel" aria-label="Book search">
+            <div class="search-row">
+                <input id="searchInput" type="text" placeholder="Search by title, author, or genre..." aria-label="Search books" />
+                <button id="searchBtn" class="button accent">Search</button>
+                <button id="speakBtn"  class="button secondary" aria-label="Voice search">Speak</button>
+            </div>
+            <div class="filters-row">
+                <select id="categorySelect" aria-label="Filter by category"><option>All categories</option></select>
+                <select id="languageSelect" aria-label="Filter by language"><option>All languages</option></select>
+                <select id="voiceSelect"    aria-label="Select reading voice"><option>Voice: English</option></select>
+            </div>
+            <div class="status-row">
+                <div class="status-pill"><strong id="bookCount">0</strong> Books</div>
+                <div class="status-pill">Status: <span id="statusText">Ready</span></div>
+            </div>
+            <div id="bookGrid" class="books-grid" role="list"></div>
+        </section>
+
+        <aside class="sidebar" aria-label="Playback controls">
+            <section class="panel">
+                <h2>Playback Controls</h2>
+                <div class="control-grid">
+                    <button id="playContinueBtn" class="button primary"  aria-label="Read or continue">Read / Continue</button>
+                    <button id="pauseBtn"         class="button secondary" aria-label="Pause">Pause</button>
+                    <button id="stopBtn"          class="button secondary" aria-label="Stop">Stop</button>
+                    <button id="nextBtn"          class="button secondary" aria-label="Next book">Next</button>
+                    <button id="slowBtn"          class="button secondary small-btn" aria-label="Slow speed">Slow</button>
+                    <button id="fastBtn"          class="button secondary small-btn" aria-label="Fast speed">Fast</button>
+                </div>
+                <p id="playbackInfo" class="small-text" aria-live="polite">No book playing.</p>
+            </section>
+
+            <section class="panel">
+                <h3>Now Reading Preview</h3>
+                <div id="previewBox" class="preview-box" aria-live="polite">Preview will appear here as the book is read.</div>
+            </section>
+
+            <section class="panel">
+                <h3>Quick Feedback</h3>
+                <div class="feedback-grid" role="group" aria-label="Rate your experience">
+                    <button class="button secondary" data-score="1" aria-label="Rate 1 out of 5">1</button>
+                    <button class="button secondary" data-score="2" aria-label="Rate 2 out of 5">2</button>
+                    <button class="button secondary" data-score="3" aria-label="Rate 3 out of 5">3</button>
+                    <button class="button secondary" data-score="4" aria-label="Rate 4 out of 5">4</button>
+                    <button class="button secondary" data-score="5" aria-label="Rate 5 out of 5">5</button>
+                </div>
+                <p id="feedbackMessage" class="small-text" aria-live="polite">Rate your experience (1 = poor, 5 = excellent). This helps our usability testing.</p>
+            </section>
+        </aside>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+// ── DOM refs ──────────────────────────────────────────────────────────────────
+const searchInput     = document.getElementById('searchInput');
+const searchBtn       = document.getElementById('searchBtn');
+const speakBtn        = document.getElementById('speakBtn');
+const welcomeBtn      = document.getElementById('welcomeBtn');
+const listBooksBtn    = document.getElementById('listBooksBtn');
+const showAllBtn      = document.getElementById('showAllBtn');
+const categorySelect  = document.getElementById('categorySelect');
+const languageSelect  = document.getElementById('languageSelect');
+const voiceSelect     = document.getElementById('voiceSelect');
+const bookGrid        = document.getElementById('bookGrid');
+const bookCount       = document.getElementById('bookCount');
+const statusText      = document.getElementById('statusText');
+const playbackInfo    = document.getElementById('playbackInfo');
+const previewBox      = document.getElementById('previewBox');
+const feedbackMessage = document.getElementById('feedbackMessage');
+const playContinueBtn = document.getElementById('playContinueBtn');
+const pauseBtn        = document.getElementById('pauseBtn');
+const stopBtn         = document.getElementById('stopBtn');
+const nextBtn         = document.getElementById('nextBtn');
+const slowBtn         = document.getElementById('slowBtn');
+const fastBtn         = document.getElementById('fastBtn');
+const messageDiv      = document.getElementById('message');
+
+// ── State ─────────────────────────────────────────────────────────────────────
+const synth = window.speechSynthesis;
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+let recognition      = null;
+let voices           = [];
+let books            = [];
+let visibleBooks     = [];
+let currentBookIndex = -1;
+let currentBook      = null;
+let currentSpeechRate = 0.95;
+let currentUtterance  = null;
+let isPlaying         = false;
+
+// Conversation state: 'idle' | 'awaiting_book_selection'
+let conversationState = 'idle';
+
+if (SpeechRecognitionAPI) {
+    recognition = new SpeechRecognitionAPI();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+
+function showMessage(text) {
+    messageDiv.textContent = text;
+    messageDiv.style.display = 'block';
+}
+
+function updateStatus(count, text) {
+    bookCount.textContent = count;
+    statusText.textContent = text;
+}
+
+function updatePlaybackInfo(text) {
+    playbackInfo.textContent = text;
+}
+
+function updatePreview(text) {
+    previewBox.textContent = text || 'Preview will appear here as the book is read.';
+}
+
+function toTitleCase(v) {
+    return v.replace(/\w\S*/g, t => t.charAt(0).toUpperCase() + t.substr(1).toLowerCase());
+}
+
+// ── Button state ──────────────────────────────────────────────────────────────
+
+function syncButtonState() {
+    if (isPlaying && !synth.paused) {
+        playContinueBtn.textContent = '⏸  Reading…';
+        playContinueBtn.className = 'button active-play';
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.className = 'button secondary';
+    } else if (synth.paused) {
+        playContinueBtn.textContent = '▶  Resume';
+        playContinueBtn.className = 'button primary';
+        pauseBtn.textContent = '⏸  Paused';
+        pauseBtn.className = 'button active-pause';
+    } else {
+        playContinueBtn.textContent = 'Read / Continue';
+        playContinueBtn.className = 'button primary';
+        pauseBtn.textContent = 'Pause';
+        pauseBtn.className = 'button secondary';
+    }
+}
+
+function highlightActiveCard(index) {
+    document.querySelectorAll('.book-card').forEach((el, i) => {
+        el.classList.toggle('now-playing', i === index);
+    });
+}
+
+// ── Server logging ────────────────────────────────────────────────────────────
+
+function logEvent(eventType, details) {
+    fetch('/log_event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            event_type: eventType,
+            book_id:    currentBook ? currentBook.id : '',
+            details:    details || (currentBook ? currentBook.title : ''),
+        })
+    }).catch(() => {});
+}
+
+// ── Voice selection ───────────────────────────────────────────────────────────
+
+function getSelectedVoice() {
+    return voices[voiceSelect.selectedIndex] || null;
+}
+
+function populateVoiceSelect() {
+    voices = synth.getVoices();
+    if (!voices.length) return;
+    voiceSelect.innerHTML = voices
+        .map((v, i) => `<option value="${i}">${v.name} (${v.lang})</option>`)
+        .join('');
+    const def = voices.findIndex(v => v.lang.startsWith('en'));
+    voiceSelect.selectedIndex = def >= 0 ? def : 0;
+}
+
+function loadVoices() {
+    populateVoiceSelect();
+    if (synth.onvoiceschanged !== undefined) synth.onvoiceschanged = populateVoiceSelect;
+}
+
+// ── Filters & rendering ───────────────────────────────────────────────────────
+
+function populateFilters(items) {
+    const cats  = new Set(['All categories']);
+    const langs = new Set(['All languages']);
+    items.forEach(b => {
+        if (b.category) cats.add(b.category);
+        if (b.language) langs.add(b.language);
+    });
+    categorySelect.innerHTML = Array.from(cats).map(v => `<option>${v}</option>`).join('');
+    languageSelect.innerHTML = Array.from(langs).map(v => `<option>${v}</option>`).join('');
+}
+
+function renderBookCard(book, index) {
+    const tags = book.tags ? book.tags.split('|').filter(Boolean) : [];
+    const active = index === currentBookIndex ? ' now-playing' : '';
+    return `<article class="book-card${active}" role="listitem" tabindex="0"
+                aria-label="${book.title} by ${book.author}"
+                onclick="handleBookClick(${index})"
+                onkeypress="if(event.key==='Enter')handleBookClick(${index})">
+        <h3>${book.title}</h3>
+        <p>${book.author}</p>
+        <div class="tags">
+            <span class="tag">${book.category || 'General'}</span>
+            <span class="tag">${book.language || 'English'}</span>
+            ${tags.map(t => `<span class="tag">${toTitleCase(t)}</span>`).join('')}
+        </div>
+        <button class="button secondary" type="button"
+                aria-label="Read ${book.title}"
+                onclick="handleReadButton(event,${index})">Read</button>
+    </article>`;
+}
+
+function renderBooks(items) {
+    if (!items.length) {
+        bookGrid.innerHTML = '<p class="empty-state">No books found. Try a different search or show all books.</p>';
+        updateStatus(0, 'No results');
+        return;
+    }
+    bookGrid.innerHTML = items.map(renderBookCard).join('');
+    updateStatus(items.length, `Found ${items.length} book${items.length !== 1 ? 's' : ''}`);
+}
+
+// overrideQuery: passed directly from voice to avoid DOM-read timing issues
+function filterBooks(overrideQuery) {
+    const query    = (overrideQuery !== undefined ? overrideQuery : searchInput.value).trim().toLowerCase();
+    const category = categorySelect.value;
+    const language = languageSelect.value;
+
+    visibleBooks = books.filter(book => {
+        const matchesQuery = !query || [book.title, book.author, book.tags, book.category]
+            .some(v => (v || '').toLowerCase().includes(query));
+        const matchesCat  = category === 'All categories' || (book.category || '').toLowerCase() === category.toLowerCase();
+        const matchesLang = language === 'All languages'  || (book.language || '').toLowerCase() === language.toLowerCase();
+        return matchesQuery && matchesCat && matchesLang;
+    });
+
+    renderBooks(visibleBooks);
+}
+
+// ── Book loading ──────────────────────────────────────────────────────────────
+
+async function loadAllBooks() {
+    showMessage('Loading books…');
+    try {
+        const res  = await fetch('/books');
+        const data = await res.json();
+        books        = data.books || [];
+        visibleBooks = [...books];
+        populateFilters(books);
+        renderBooks(visibleBooks);
+        showMessage(`${books.length} books available. Search or browse below.`);
+    } catch (err) {
+        showMessage(`Error loading books: ${err.message}`);
+        bookGrid.innerHTML = '<p class="empty-state">Unable to load books. Is the server running?</p>';
+    }
+}
+
+// ── Core TTS ─────────────────────────────────────────────────────────────────
+
+function speakText(text) {
+    if (!synth) { showMessage('Text-to-speech not supported in this browser.'); return; }
+    synth.cancel();
+    currentUtterance = null;
+    isPlaying = false;
+    syncButtonState();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    const voice = getSelectedVoice();
+    if (voice) utter.voice = voice;
+    utter.rate = currentSpeechRate;
+
+    utter.onstart  = () => { isPlaying = true;  syncButtonState(); };
+    utter.onpause  = () => { syncButtonState(); };
+    utter.onresume = () => { isPlaying = true;  syncButtonState(); };
+    utter.onend    = () => {
+        isPlaying = false;
+        currentUtterance = null;
+        syncButtonState();
+        showMessage('Finished reading.');
+        updatePlaybackInfo(currentBook
+            ? `Finished: ${currentBook.title} \u2022 ${currentBook.author}`
+            : 'Finished reading.');
+    };
+    utter.onerror = (e) => {
+        if (e.error === 'interrupted' || e.error === 'canceled') return;
+        isPlaying = false; currentUtterance = null; syncButtonState();
+        showMessage(`Speech error: ${e.error}`);
+    };
+
+    currentUtterance = utter;
+    synth.speak(utter);
+}
+
+/**
+ * Speak text, then call onDone when finished.
+ * Used by the conversational flow so we can listen after speaking.
+ */
+function speakThen(text, onDone) {
+    if (!synth) { if (onDone) onDone(); return; }
+    synth.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    const voice = getSelectedVoice();
+    if (voice) utter.voice = voice;
+    utter.rate = currentSpeechRate;
+    utter.onend   = () => { if (onDone) onDone(); };
+    utter.onerror = (e) => {
+        if (e.error === 'interrupted' || e.error === 'canceled') return;
+        if (onDone) onDone();
+    };
+    synth.speak(utter);
+}
+
+// ── Conversational book selection ─────────────────────────────────────────────
+
+/**
+ * Speak the full book list then ask which book the user wants,
+ * then auto-start the microphone so they can answer.
+ */
+function announceLibraryAndListen() {
+    if (books.length === 0) {
+        speakText('No books are loaded yet. Please wait and try again.');
+        return;
+    }
+    const titles = books.map(b => b.title).join('. ');
+    const text   = 'Welcome to the Voice-Navigable Digital Library. '
+        + 'You can say find followed by a title, author, or genre to search. '
+        + 'Available books are: ' + titles + '. '
+        + 'Which book would you like to read? Press Speak and say the title.';
+
+    conversationState = 'awaiting_book_selection';
+    updateStatus(books.length, 'Waiting for your book choice\u2026');
+    showMessage('Listening for your book choice after the list finishes\u2026');
+
+    speakThen(text, () => {
+        if (recognition && conversationState === 'awaiting_book_selection') {
+            try {
+                recognition.abort();
+            } catch (e) {}
+            setTimeout(() => {
+                if (conversationState === 'awaiting_book_selection') {
+                    try {
+                        recognition.start();
+                        speakBtn.textContent = 'Listening\u2026';
+                        speakBtn.disabled = true;
+                    } catch (e) {}
+                }
+            }, 150);
+        }
+    });
+}
+
+/**
+ * Match a spoken phrase to a book using four levels of fuzzy matching.
+ */
+function matchBookByVoice(query) {
+    const q = query.toLowerCase().trim();
+    let m;
+    m = books.find(b => b.title.toLowerCase() === q);                          if (m) return m;
+    m = books.find(b => b.title.toLowerCase().includes(q));                    if (m) return m;
+    m = books.find(b => q.includes(b.title.toLowerCase()));                    if (m) return m;
+    const qWords = q.split(/\s+/).filter(w => w.length > 2);
+    m = books.find(b => {
+        const tw = b.title.toLowerCase().split(/\s+/);
+        return qWords.some(w => tw.includes(w));
+    });
+    return m || null;
+}
+
+// ── Playback ──────────────────────────────────────────────────────────────────
+
+async function startPlayback(index) {
+    if (!visibleBooks[index]) { showMessage('No book selected to play.'); return; }
+
+    synth.cancel();
+    isPlaying = false;
+    currentUtterance = null;
+    syncButtonState();
+
+    currentBookIndex = index;
+    currentBook      = visibleBooks[index];
+    updatePlaybackInfo(`Loading \u201c${currentBook.title}\u201d\u2026`);
+    showMessage(`Loading \u201c${currentBook.title}\u201d\u2026`);
+    highlightActiveCard(index);
+
+    try {
+        const res  = await fetch(`/book_text/${currentBook.id}`);
+        const data = await res.json();
+        if (data.error) { showMessage(data.error); updatePlaybackInfo('Error loading book.'); return; }
+        updatePlaybackInfo(`${data.title} \u2022 ${data.author}`);
+        updatePreview(data.text.slice(0, 400) + '\u2026');
+        speakText(data.text);
+        logEvent('play');
+    } catch (err) {
+        showMessage(`Error loading book: ${err.message}`);
+        updatePlaybackInfo('Error loading book.');
+    }
+}
+
+function readContinue() {
+    if (synth.paused) {
+        synth.resume(); isPlaying = true; syncButtonState();
+        showMessage('Resumed reading.'); logEvent('resume'); return;
+    }
+    if (isPlaying) { pauseReading(); return; }
+    if (currentBookIndex >= 0 && visibleBooks[currentBookIndex]) {
+        startPlayback(currentBookIndex);
+    } else if (visibleBooks.length > 0) {
+        startPlayback(0);
+    } else {
+        showMessage('No book available. Search for a book first.');
+    }
+}
+
+function pauseReading() {
+    if (!synth.speaking && !synth.paused) { showMessage('Nothing is playing right now.'); return; }
+    if (synth.paused) {
+        synth.resume(); isPlaying = true; syncButtonState();
+        showMessage('Resumed reading.'); logEvent('resume');
+    } else {
+        synth.pause(); isPlaying = false; syncButtonState();
+        showMessage('Paused. Press Pause again or Read / Continue to resume.'); logEvent('pause');
+    }
+}
+
+function stopReading() {
+    synth.cancel(); isPlaying = false; currentUtterance = null; syncButtonState();
+    updatePlaybackInfo(currentBook ? `Stopped: ${currentBook.title}` : 'Playback stopped.');
+    showMessage('Playback stopped.'); logEvent('stop');
+}
+
+function nextBook() {
+    if (!visibleBooks.length) { showMessage('No books in the current list.'); return; }
+    const next = (currentBookIndex + 1) < visibleBooks.length ? currentBookIndex + 1 : 0;
+    startPlayback(next);
+}
+
+function setSpeed(rate) {
+    currentSpeechRate = rate;
+    const label = rate < 1 ? 'slow' : rate > 1 ? 'fast' : 'normal';
+    showMessage(`Speed set to ${label} (${rate}\u00d7).`); logEvent('speed_change', `rate=${rate}`);
+    if ((synth.speaking || synth.paused) && currentBook) startPlayback(currentBookIndex);
+}
+
+// ── Welcome & show-all ────────────────────────────────────────────────────────
+
+function playWelcomeMessage() {
+    announceLibraryAndListen();
+    logEvent('welcome');
+}
+
+function showAllBooks() {
+    conversationState = 'idle';
+    searchInput.value = '';
+    categorySelect.selectedIndex = 0;
+    languageSelect.selectedIndex = 0;
+    visibleBooks = [...books];
+    renderBooks(visibleBooks);
+    showMessage('Showing all books.');
+}
+
+// ── Book card handlers ────────────────────────────────────────────────────────
+
+function handleBookClick(index)        { startPlayback(index); }
+function handleReadButton(event, index) { event.stopPropagation(); startPlayback(index); }
+
+// ── Voice recognition ─────────────────────────────────────────────────────────
+
+function initVoiceRecognition() {
+    if (!recognition) return;
+
+    recognition.addEventListener('result', (event) => {
+        const spoken      = event.results[0][0].transcript.trim();
+        const spokenLower = spoken.toLowerCase();
+
+        // "list books" command — works from any state
+        if (spokenLower.includes('list books') || spokenLower.includes('list all books')
+                || spokenLower.includes('show books') || spokenLower.includes('what books')) {
+            showMessage(`Heard: "${spoken}"`);
+            announceLibraryAndListen();
+            return;
+        }
+
+        // ── Playback voice controls (only while actively playing or paused) ──
+        if (isPlaying || synth.paused) {
+            if (spokenLower.includes('stop')) {
+                showMessage(`Heard: "${spoken}" \u2192 stopping`);
+                stopReading(); return;
+            }
+            if (spokenLower.includes('pause')) {
+                showMessage(`Heard: "${spoken}" \u2192 pausing`);
+                pauseReading(); return;
+            }
+            if (spokenLower.includes('resume') || spokenLower.includes('continue')
+                    || spokenLower.includes('read')) {
+                showMessage(`Heard: "${spoken}" \u2192 resuming`);
+                readContinue(); return;
+            }
+            if (spokenLower.includes('next')) {
+                showMessage(`Heard: "${spoken}" \u2192 next book`);
+                nextBook(); return;
+            }
+            if (spokenLower.includes('slow')) {
+                showMessage(`Heard: "${spoken}" \u2192 slow speed`);
+                setSpeed(0.7); return;
+            }
+            if (spokenLower.includes('fast')) {
+                showMessage(`Heard: "${spoken}" \u2192 fast speed`);
+                setSpeed(1.3); return;
+            }
+        }
+
+        // Awaiting book selection after the list was read
+        if (conversationState === 'awaiting_book_selection') {
+            const matched = matchBookByVoice(spokenLower);
+            if (matched) {
+                conversationState = 'idle';
+                showMessage(`Heard: "${spoken}" \u2192 playing "${matched.title}"`);
+                visibleBooks = [...books];
+                renderBooks(visibleBooks);
+                const idx = visibleBooks.findIndex(b => b.id === matched.id);
+                startPlayback(idx >= 0 ? idx : 0);
+            } else {
+                showMessage(`Heard: "${spoken}" \u2014 no matching book found. Try again.`);
+                speakThen(
+                    `Sorry, I could not find a book called ${spoken}. Please try again.`,
+                    () => {
+                        if (recognition) {
+                            try { recognition.start(); } catch (e) {}
+                            speakBtn.textContent = 'Listening\u2026';
+                            speakBtn.disabled = true;
+                        }
+                    }
+                );
+            }
+            return;
+        }
+
+        // Normal search mode — strip command prefixes then filter
+        const PREFIXES = ['find ', 'search for ', 'search ', 'look for ', 'show me ', 'get ', 'tsvaga '];
+        let query = spokenLower;
+        for (const p of PREFIXES) {
+            if (query.startsWith(p)) { query = query.slice(p.length).trim(); break; }
+        }
+
+        searchInput.value = query;
+        filterBooks(query);
+        showMessage(`Heard: \u201c${spoken}\u201d \u2192 searching for \u201c${query}\u201d`);
+    });
+
+    recognition.addEventListener('error', (e) => {
+        showMessage(e.error === 'no-speech' ? 'No speech detected. Please try again.' : `Voice error: ${e.error}`);
+        speakBtn.textContent = 'Speak';
+        speakBtn.disabled = false;
+    });
+
+    recognition.addEventListener('end', () => {
+        speakBtn.textContent = 'Speak';
+        speakBtn.disabled = false;
+    });
+}
+
+// ── Feedback ──────────────────────────────────────────────────────────────────
+
+function initFeedbackButtons() {
+    document.querySelectorAll('.feedback-grid button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.feedback-grid button').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            const score = btn.dataset.score;
+            feedbackMessage.textContent = `Thank you! You rated this experience ${score}/5.`;
+            logEvent('feedback', `score=${score}`);
+        });
+    });
+}
+
+// ── Event wiring ──────────────────────────────────────────────────────────────
+
+function setupEvents() {
+    searchBtn.addEventListener('click', filterBooks);
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') filterBooks(); });
+    categorySelect.addEventListener('change', filterBooks);
+    languageSelect.addEventListener('change', filterBooks);
+
+    welcomeBtn.addEventListener('click',   playWelcomeMessage);
+    listBooksBtn.addEventListener('click', announceLibraryAndListen);
+    showAllBtn.addEventListener('click',   showAllBooks);
+
+    playContinueBtn.addEventListener('click', readContinue);
+    pauseBtn.addEventListener('click',        pauseReading);
+    stopBtn.addEventListener('click',         stopReading);
+    nextBtn.addEventListener('click',         nextBook);
+    slowBtn.addEventListener('click', () => setSpeed(0.7));
+    fastBtn.addEventListener('click', () => setSpeed(1.3));
+
+    voiceSelect.addEventListener('change', () => {
+        showMessage('Voice changed.');
+        if ((synth.speaking || synth.paused) && currentBook) startPlayback(currentBookIndex);
+    });
+
+    // Spacebar anywhere on the page triggers the Speak button,
+    // unless the user is typing in a text input or textarea.
+    document.addEventListener('keydown', (e) => {
+        if (e.code !== 'Space') return;
+        const tag = document.activeElement ? document.activeElement.tagName : '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        e.preventDefault();   // stop page scroll
+        speakBtn.click();     // runs all existing speech recognition code
+    });
+
+    speakBtn.addEventListener('click', () => {
+        if (!recognition) {
+            showMessage('Voice search not supported in this browser. Try Chrome or Edge.');
+            return;
+        }
+        conversationState = 'idle';   // always treat Speak button as a normal search
+        speakBtn.textContent = 'Listening\u2026';
+        speakBtn.disabled = true;
+        showMessage('Listening for your search query\u2026');
+        try {
+            recognition.abort();      // cancel any open session first
+        } catch (e) {}
+        setTimeout(() => {            // brief gap so abort completes before start
+            try {
+                recognition.start();
+            } catch (e) {
+                speakBtn.textContent = 'Speak';
+                speakBtn.disabled = false;
+                showMessage('Could not start voice recognition. Please try again.');
+            }
+        }, 150);
+    });
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+function initialize() {
+    loadAllBooks();
+    setupEvents();
+    initVoiceRecognition();
+    initFeedbackButtons();
+    if (synth) loadVoices();
+
+    // Play the welcome MP3 automatically when the page loads
+    const welcomeAudio = document.getElementById('welcomeAudio');
+    if (welcomeAudio) {
+        welcomeAudio.play().catch(() => {
+            // Browsers block autoplay until the user interacts with the page.
+            // If blocked, play on the first click anywhere instead.
+            document.addEventListener('click', () => {
+                welcomeAudio.play().catch(() => {});
+            }, { once: true });
+        });
+    }
+}
+
+window.handleBookClick  = handleBookClick;
+window.handleReadButton = handleReadButton;
+
+initialize();
+</script>
+</body>
+</html>
