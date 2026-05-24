@@ -1,0 +1,6 @@
+id,title,author,file_path,duration_seconds,language
+1,Pride and Prejudice,Jane Austen,data/cleaned/pride_and_prejudice.txt,14400,en
+2,The Great Gatsby,F. Scott Fitzgerald,data/cleaned/gatsby.txt,10800,en
+3,To Kill a Mockingbird,Harper Lee,data/cleaned/mockingbird.txt,16200,en
+4,1984,George Orwell,data/cleaned/1984.txt,19800,en
+5,Jane Eyre,Charlotte Brontë,data/cleaned/jane_eyre.txt,18000,en
