@@ -1,0 +1,10 @@
+speechrecognition
+pyaudio
+flask
+pandas
+numpy
+matplotlib
+seaborn
+jiwer
+TTS
+pydub
